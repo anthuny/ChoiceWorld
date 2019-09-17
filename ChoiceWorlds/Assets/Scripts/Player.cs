@@ -11,24 +11,122 @@ public class Player : MonoBehaviour
     public float gravityStr;
     public float gravityNor;
     public bool jumping = false;
+    public float hitWait = .3f;
+    public int health = 5;
+    public bool isShielding;
+
+    public bool UtilityOn;
+    public bool DefenceOn;
+    public bool AttackOn;
+    public bool hitting;
+
+    public GameObject sword;
+    public GameObject shield;
 
     public GameObject player;
     public Rigidbody rb;
+    private Material playerMat;
+
+
 
     // Start is called before the first frame update
     void Start()
     {
+
         Physics.gravity = new Vector3(0, gravityNor, 0);
 
         jump = new Vector3(0.0f, jumpStrength, 0.0f);
+
+        playerMat = GetComponent<Renderer>().material;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        //Debug.Log(Physics.gravity);
         PlayerMovement();
         PlayerJump();
+        Shielding();
+        StanceChange();
+        Attacking();
+    }
+
+    void Attacking()
+    {
+        if (Input.GetMouseButton(0) && !hitting)
+        {
+            //sword.transform.Rotate(90, 0, 0);
+            sword.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            hitting = true;
+        }
+
+        if (!Input.GetMouseButton(0))
+        {
+            //sword.transform.Rotate(0, 0, 0);
+            sword.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            hitting = false;
+        }
+    }
+    
+    void Shielding()
+    {
+        if (isShielding)
+        {
+
+        }
+
+        if (Input.GetMouseButton(1))
+        {
+            shield.transform.localRotation = Quaternion.Euler(355, 0, 0);
+            shield.transform.localPosition = new Vector3(-.2f, 0, .5f);
+            shield.transform.localScale = new Vector3(2.2f, 2.2f, 2.2f);
+
+            isShielding = true;
+        }
+
+        if (!Input.GetMouseButton(1))
+        {
+            shield.transform.localRotation = Quaternion.Euler(0, 293, 0);
+            shield.transform.localPosition = new Vector3(-.5f, 0, .286f);
+            shield.transform.localScale = new Vector3(1.3f,1.3f, 1.3f);
+
+            isShielding = false;
+        }
+    }
+
+    public void HealthDecrease()
+    {
+        
+        health--;
+    }
+
+    void StanceChange()
+    {
+        //Utility on
+        if (Input.GetKeyDown("1"))
+        {
+            UtilityOn = true;
+            AttackOn = false;
+            DefenceOn = false;
+            playerMat.color = Color.green;
+        }
+
+        //Attack on
+        if (Input.GetKeyDown("2"))
+        {
+            AttackOn = true;
+            UtilityOn = false;
+            DefenceOn = false;
+            playerMat.color = Color.red;
+        }
+
+        //Defence on
+        if (Input.GetKeyDown("3"))
+        {
+            DefenceOn = true;
+            UtilityOn = false;
+            AttackOn = false;
+            playerMat.color = Color.blue;
+        }
     }
 
     void PlayerMovement()
