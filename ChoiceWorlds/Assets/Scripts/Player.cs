@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -12,14 +13,17 @@ public class Player : MonoBehaviour
     public float gravityNor;
     public bool jumping = false;
     public float hitWait = .3f;
-    public int health = 5;
+    public float health = 5;
     public bool isShielding;
+    public float healthDecAmount = 5f;
+    public float healthShieldDecAmount = 2f;
 
     public bool UtilityOn;
     public bool DefenceOn;
     public bool AttackOn;
     public bool hitting;
 
+    public Image healthBar; 
     public GameObject sword;
     public GameObject shield;
 
@@ -52,7 +56,7 @@ public class Player : MonoBehaviour
 
     void Attacking()
     {
-        if (Input.GetMouseButton(0) && !hitting)
+        if (Input.GetMouseButton(0) && !hitting && !isShielding)
         {
             //sword.transform.Rotate(90, 0, 0);
             sword.transform.localRotation = Quaternion.Euler(90, 0, 0);
@@ -69,11 +73,6 @@ public class Player : MonoBehaviour
     
     void Shielding()
     {
-        if (isShielding)
-        {
-
-        }
-
         if (Input.GetMouseButton(1))
         {
             shield.transform.localRotation = Quaternion.Euler(355, 0, 0);
@@ -95,8 +94,23 @@ public class Player : MonoBehaviour
 
     public void HealthDecrease()
     {
-        
-        health--;
+        //if player is shielding
+        if (isShielding)
+        {
+            health -= healthShieldDecAmount;
+
+            //Decrease health bar visual
+            healthBar.fillAmount -= healthShieldDecAmount / 10f;
+        }
+
+        //if player is NOT shielding
+        else
+        {
+            health -= healthDecAmount;
+
+            //Decrease health bar visual
+            healthBar.fillAmount -= healthDecAmount / 10f;
+        }
     }
 
     void StanceChange()

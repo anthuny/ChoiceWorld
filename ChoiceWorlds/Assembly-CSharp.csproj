@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\Camera.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
+    <Compile Include="Assets\Scripts\Watch.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/Anthony Mitchell/Documents/GitHub/ChoiceWorld/ChoiceWorlds/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

@@ -17,19 +17,25 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed);
+        Shoot();
+        BulletDie();
+    }
 
+    void Shoot()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed);
+    }
+
+    void BulletDie()
+    {
         float dist = Vector3.Distance(target.transform.position, transform.position);
 
-        //Hit
         if (dist < hitRadius)
         {
-            //Find player script
             Player playerScript = target.GetComponent<Player>();
             playerScript.HealthDecrease();
 
             Destroy(gameObject);
         }
     }
-
 }
