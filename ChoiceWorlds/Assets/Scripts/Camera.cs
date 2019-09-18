@@ -7,6 +7,7 @@ public class Camera : MonoBehaviour
     public float rotationSpeed = 1;
     public Transform target, player;
     float mouseX, mouseY;
+    public Camera cam;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +27,7 @@ public class Camera : MonoBehaviour
         mouseY += Input.GetAxis("Mouse Y") * rotationSpeed;
         mouseY = Mathf.Clamp(mouseY, -35, 60);
 
-        transform.LookAt(target);
+        //transform.LookAt(target);
 
         target.rotation = Quaternion.Euler(mouseY, mouseX, 0);
         player.rotation = Quaternion.Euler(0, mouseX, 0);

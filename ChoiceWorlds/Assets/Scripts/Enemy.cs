@@ -18,11 +18,13 @@ public class Enemy : MonoBehaviour
     public float shootCooldown = 2f;
 
     private NavMeshAgent navAgent;
-    public GameObject target;
+    private GameObject target;
     public GameObject bullet;
     
     private void Awake()
     {
+        target = GameObject.FindWithTag("Player");
+
         navAgent = GetComponent<NavMeshAgent>();
     }
 
@@ -46,19 +48,24 @@ public class Enemy : MonoBehaviour
 
                 recievedHitTimer = 0;
             }
-        }
+        }   
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerStay(Collider other)
     {
-        Debug.Log(recievedHitTimer);
         gettingHit = true;
-        Debug.Log(collision.collider.gameObject.tag);
 
-        if (collision.collider.gameObject.tag == "Sword")
+        Player playerScript = target.GetComponent<Player>();
+
+        if (other.gameObject.tag == "Sword" && recievedHitTimer == 0 && playerScript.hitting)
         {
             e_Health -= recievedDam;
-            healthBar.fillAmount -= recievedDam / 10;
+            healthBar.fillAmount -= recievedDam / 100;
             Debug.Log("hit ");
+
+            if (healthBar.fillAmount <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
     void Walk()

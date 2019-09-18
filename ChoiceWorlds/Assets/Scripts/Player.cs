@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+
     public float speed = 10f;
     public Vector3 jump;
     public float jumpStrength = 2f;
@@ -17,11 +18,27 @@ public class Player : MonoBehaviour
     public bool isShielding;
     public float healthDecAmount = 5f;
     public float healthShieldDecAmount = 2f;
+    public GameObject enemy1;
 
-    public bool UtilityOn;
-    public bool DefenceOn;
-    public bool AttackOn;
+    public float baseSpeed = 10f;
+    public float utilitySpeed = 15f;
+
+    public bool utilityOn = true;
+    public bool defenceOn;
+    public bool attackOn;
     public bool hitting;
+
+    public GameObject hook;
+    public GameObject hookHolder;
+
+    public float hookTravelSpeed;
+    public float playerTravelSpeed;
+
+    public static bool fired;
+    public bool hooked;
+
+    public float maxDistance;
+    private float currentDistance;
 
     public Image healthBar; 
     public GameObject sword;
@@ -31,11 +48,12 @@ public class Player : MonoBehaviour
     public Rigidbody rb;
     private Material playerMat;
 
-
+    private GameObject cam;
 
     // Start is called before the first frame update
     void Start()
     {
+        cam = GameObject.FindWithTag("MainCamera");
 
         Physics.gravity = new Vector3(0, gravityNor, 0);
 
@@ -51,7 +69,17 @@ public class Player : MonoBehaviour
         PlayerJump();
         Shielding();
         StanceChange();
+        StanceStats();
         Attacking();
+        SpawningEnemy();
+    }
+
+    void SpawningEnemy()
+    {
+        if (Input.GetKey(KeyCode.K))
+        {
+            Instantiate(enemy1, new Vector3(0, 0, 0), Quaternion.identity);
+        }
     }
 
     void Attacking()
@@ -73,22 +101,25 @@ public class Player : MonoBehaviour
     
     void Shielding()
     {
-        if (Input.GetMouseButton(1))
+        if (!utilityOn)
         {
-            shield.transform.localRotation = Quaternion.Euler(355, 0, 0);
-            shield.transform.localPosition = new Vector3(-.2f, 0, .5f);
-            shield.transform.localScale = new Vector3(2.2f, 2.2f, 2.2f);
+            if (Input.GetMouseButton(1))
+            {
+                shield.transform.localRotation = Quaternion.Euler(355, 0, 0);
+                shield.transform.localPosition = new Vector3(-.2f, 0, .5f);
+                shield.transform.localScale = new Vector3(2.2f, 2.2f, 2.2f);
 
-            isShielding = true;
-        }
+                isShielding = true;
+            }
 
-        if (!Input.GetMouseButton(1))
-        {
-            shield.transform.localRotation = Quaternion.Euler(0, 293, 0);
-            shield.transform.localPosition = new Vector3(-.5f, 0, .286f);
-            shield.transform.localScale = new Vector3(1.3f,1.3f, 1.3f);
+            if (!Input.GetMouseButton(1))
+            {
+                shield.transform.localRotation = Quaternion.Euler(0, 293, 0);
+                shield.transform.localPosition = new Vector3(-.5f, 0, .286f);
+                shield.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
 
-            isShielding = false;
+                isShielding = false;
+            }
         }
     }
 
@@ -118,29 +149,63 @@ public class Player : MonoBehaviour
         //Utility on
         if (Input.GetKeyDown("1"))
         {
-            UtilityOn = true;
-            AttackOn = false;
-            DefenceOn = false;
+            utilityOn = true;
+            attackOn = false;
+            defenceOn = false;
             playerMat.color = Color.green;
+
+            shield.SetActive(false);
         }
 
         //Attack on
         if (Input.GetKeyDown("2"))
         {
-            AttackOn = true;
-            UtilityOn = false;
-            DefenceOn = false;
+            attackOn = true;
+            utilityOn = false;
+            defenceOn = false;
             playerMat.color = Color.red;
+
+            shield.SetActive(true);
         }
 
         //Defence on
         if (Input.GetKeyDown("3"))
         {
-            DefenceOn = true;
-            UtilityOn = false;
-            AttackOn = false;
+            defenceOn = true;
+            utilityOn = false;
+            attackOn = false;
             playerMat.color = Color.blue;
+
+            shield.SetActive(true);
         }
+
+        //Upon starting, utility is already on, just make sure shield is disabled
+        if (utilityOn)
+        {
+            shield.SetActive(false);
+
+            RaycastHit hit;
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit))
+            {
+                Debug.Log(hit.transform.name);
+            }
+        }
+
+
+    }
+
+    void StanceStats()
+    {
+        if (utilityOn)
+        {
+            speed = utilitySpeed;
+        }
+
+        if (!utilityOn)
+        {
+            speed = baseSpeed;
+        }
+
     }
 
     void PlayerMovement()

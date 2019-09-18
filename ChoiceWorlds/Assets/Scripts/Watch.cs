@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Watch : MonoBehaviour
 {
-    public GameObject target;
+    private GameObject target;
 
 
-    // Update is called once per frame
-    void Update()
+
+    private void Start()
     {
-        transform.LookAt(target.transform);
+        target = GameObject.FindWithTag("MainCamera");
     }
 }
